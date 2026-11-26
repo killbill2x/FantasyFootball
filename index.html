@@ -381,7 +381,7 @@
             <!-- NEW: Top 10 Largest Points Differences -->
             <div class="bg-lmnavy-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
                 <h3 class="text-xl font-black uppercase italic text-white mb-2 flex items-center"><i class="fa-solid fa-bolt text-lmblue-400 mr-2"></i> Top 10 Largest Points Differences (All-Time)</h3>
-                <p class="text-slate-400 text-sm mb-6">The biggest blowout victories in league history. Merges all-time records with active season scores (updates dynamically based on completed weeks every Tuesday morning at 6 AM EST).</p>
+                <p class="text-slate-400 text-sm mb-6">The biggest blowout victories in league history.</p>
                 <div class="overflow-x-auto rounded-2xl border border-slate-800">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
@@ -1027,7 +1027,7 @@
 
             // Merge with league-data.js historicMargins array if it exists
             let allMargins = typeof historicMargins !== 'undefined' ? historicMargins.slice() : [];
-                        allMargins = allMargins.concat(currentSeasonMargins);
+            allMargins = allMargins.concat(currentSeasonMargins);
             allMargins.sort((a, b) => b.diff - a.diff);
             
             const top10 = allMargins.slice(0, 10);
@@ -1739,25 +1739,130 @@
             const display = document.getElementById('h2h-score-display');
             const note = document.getElementById('h2h-note-display');
 
+            const activeH2H = Object.keys(window.dynamicH2H || {}).length > 0 ? window.dynamicH2H : (typeof h2hRecords !== 'undefined' ? h2hRecords : {});
+
             if (m1 === m2) {
                 display.innerText = "—"; note.innerText = "Cannot compare a manager against themselves.";
-            } else if (typeof h2hRecords !== 'undefined' && h2hRecords[m1] && h2hRecords[m1][m2]) {
-                display.innerText = h2hRecords[m1][m2]; note.innerText = m1 + " vs " + m2 + " — Regular Season Battles. Are You The Bitch?";
+            } else if (activeH2H[m1] && activeH2H[m1][m2]) {
+                display.innerText = activeH2H[m1][m2]; note.innerText = m1 + " vs " + m2 + " — Regular Season Battles. Are You The Bitch?";
             } else {
                 display.innerText = "0–0"; note.innerText = "No recorded head-to-head matchups between " + m1 + " and " + m2;
             }
         }
 
         // PLAYER CARDS LOGIC
+        const allTimePlayerRecords = [
+            {
+                position: "QB",
+                name: "Josh Allen",
+                team: "Buffalo Bills",
+                number: "#17",
+                week: "Week 14, 2024",
+                fpts: "56.88 pts",
+                headshot: "https://a.espncdn.com/i/headshots/nfl/players/full/3918298.png",
+                teamLogo: "https://a.espncdn.com/i/teamlogos/nfl/50/buf.png",
+                owner: "Jacksonville Jarheads",
+                stats: [
+                    { label: "Pass Yds", value: "339" },
+                    { label: "Pass TD", value: "3" },
+                    { label: "Rush Yds", value: "82" },
+                    { label: "Rush TD", value: "2" }
+                ]
+            },
+            {
+                position: "RB",
+                name: "Jahmyr Gibbs",
+                team: "Detroit Lions",
+                number: "#26",
+                week: "Week 12, 2025",
+                fpts: "65.40 pts",
+                headshot: "https://a.espncdn.com/i/headshots/nfl/players/full/4429795.png",
+                teamLogo: "https://a.espncdn.com/i/teamlogos/nfl/50/det.png",
+                owner: "Zirk Squad",
+                stats: [
+                    { label: "Rush Yds", value: "152" },
+                    { label: "Rush TD", value: "3" },
+                    { label: "Rec Yds", value: "68" },
+                    { label: "Rec TD", value: "1" }
+                ]
+            },
+            {
+                position: "WR",
+                name: "Ja'Marr Chase",
+                team: "Cincinnati Bengals",
+                number: "#1",
+                week: "Week 10, 2024",
+                fpts: "65.40 pts",
+                headshot: "https://a.espncdn.com/i/headshots/nfl/players/full/4362628.png",
+                teamLogo: "https://a.espncdn.com/i/teamlogos/nfl/50/cin.png",
+                owner: "Zirk Squad",
+                stats: [
+                    { label: "Rec Yds", value: "264" },
+                    { label: "Rec TD", value: "3" },
+                    { label: "Receptions", value: "11" },
+                    { label: "Targets", value: "13" }
+                ]
+            },
+            {
+                position: "TE",
+                name: "Brock Bowers",
+                team: "Las Vegas Raiders",
+                number: "#89",
+                week: "Week 9, 2025",
+                fpts: "48.30 pts",
+                headshot: "https://a.espncdn.com/i/headshots/nfl/players/full/4432665.png",
+                teamLogo: "https://a.espncdn.com/i/teamlogos/nfl/50/lv.png",
+                owner: "PACKER BACKERS",
+                stats: [
+                    { label: "Rec Yds", value: "145" },
+                    { label: "Rec TD", value: "2" },
+                    { label: "Receptions", value: "10" },
+                    { label: "Targets", value: "12" }
+                ]
+            },
+            {
+                position: "K",
+                name: "Ka'imi Fairbairn",
+                team: "Houston Texans",
+                number: "#15",
+                week: "Week 18, 2025",
+                fpts: "27.80 pts",
+                headshot: "https://a.espncdn.com/i/headshots/nfl/players/full/2971573.png",
+                owner: "Fin It To Win It",
+                stats: [
+                    { label: "FG 50+", value: "1" },
+                    { label: "FG 40-49", value: "4" },
+                    { label: "Total FG", value: "6" },
+                    { label: "XP Made", value: "2" }
+                ]
+            },
+            {
+                position: "DEF",
+                name: "Dallas Cowboys",
+                team: "Cowboys D/ST",
+                number: "DEF",
+                week: "Week 1, 2023",
+                fpts: "35.00 pts",
+                headshot: "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/dal.png",
+                owner: "Texas Teabaggers",
+                stats: [
+                    { label: "Sacks", value: "7" },
+                    { label: "Interceptions", value: "2" },
+                    { label: "Fum Rec", value: "1" },
+                    { label: "Def TD", value: "2" }
+                ]
+            }
+        ];
+
         function initPlayerCards() {
             const grid = document.getElementById('player-records-grid');
-            if (!grid || typeof playerRecords === 'undefined') return;
+            if (!grid) return;
 
-            grid.innerHTML = playerRecords.map((p, idx) => `
+            grid.innerHTML = allTimePlayerRecords.map((p, idx) => `
                 <article onclick="openPlayerBragCard(${idx})" class="player-card cursor-pointer group relative overflow-hidden rounded-xl border border-lmblue-500/30 shadow-xl shadow-black/40" title="Tap to generate Shareable Brag Card">
                     <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-lmblue-500 via-lmturf-500 to-lmred-500 opacity-90"></div>
                     <div class="relative flex items-start gap-4 p-4 pb-3">
-                        <div class="relative shrink-0"><img src="${p.headshot}" class="h-20 w-20 rounded-lg object-cover object-top ring-2 ring-lmblue-500/40 shadow-lg bg-lmnavy-800" loading="lazy" /></div>
+                        <div class="relative shrink-0"><img src="${p.headshot}" onerror="this.src='logo.png'" class="h-20 w-20 rounded-lg object-cover object-top ring-2 ring-lmblue-500/40 shadow-lg bg-lmnavy-800" loading="lazy" /></div>
                         <div class="min-w-0 flex-1">
                             <div class="flex items-center gap-2">
                                 <h3 class="truncate text-lg font-bold tracking-tight text-white">${p.name}</h3>
@@ -1783,8 +1888,8 @@
 
         // BRAG CARD MODAL & EXPORT LOGIC
         function openPlayerBragCard(index) {
-            if (typeof playerRecords === 'undefined' || !playerRecords[index]) return;
-            const p = playerRecords[index];
+            const p = allTimePlayerRecords[index];
+            if (!p) return;
             openBragCard({
                 name: p.name,
                 franchise: 'Manager: ' + p.owner,
